@@ -183,6 +183,7 @@ public class ArquillianPlugin implements Plugin {
     public void createTest(
             @Option(name = "class", required = true, type = PromptType.JAVA_CLASS) JavaResource classUnderTest,
             @Option(name = "enableJPA", required = false, flagOnly = true) boolean enableJPA,
+            @Option(name= "testframework"),required = false)String testFramework,
             final PipeOut out) throws FileNotFoundException {
         JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
@@ -196,6 +197,9 @@ public class ArquillianPlugin implements Plugin {
         context.put("enableJPA", enableJPA);
 
         StringWriter writer = new StringWriter();
+        if(testFramework.equals("testng")
+        Velocity.mergeTemplate("TestNGTemplateTest.vtl", "UTF-8", context, writer);
+        else
         Velocity.mergeTemplate("TemplateTest.vtl", "UTF-8", context, writer);
 
         JavaClass testClass = JavaParser.parse(JavaClass.class, writer.toString());
