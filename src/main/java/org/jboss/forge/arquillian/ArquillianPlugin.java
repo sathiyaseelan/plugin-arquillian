@@ -237,7 +237,13 @@ public class ArquillianPlugin implements Plugin {
         context.put("enableJPA", enableJPA);
 
         StringWriter writer = new StringWriter();
+        String installedTestFramework=getInstalledTestFramework();
+        if(installedTestFramework.equals("junit")){
         Velocity.mergeTemplate("TemplateTest.vtl", "UTF-8", context, writer);
+        }
+        else if(installedTestFramework.equals("testng")){
+        Velocity.mergeTemplate("TestNGTemplateTest.vtl", "UTF-8", context, writer);
+        }
 
         JavaClass testClass = JavaParser.parse(JavaClass.class, writer.toString());
         java.saveTestJavaSource(testClass);
@@ -359,5 +365,23 @@ public class ArquillianPlugin implements Plugin {
     private DependencyBuilder createTestNgArquillianDependency() {
         return DependencyBuilder.create().setGroupId("org.jboss.arquillian.testng")
                 .setArtifactId("arquillian-testng-container").setScopeType(ScopeType.TEST);
+    }
+    private String getInstalledTestFramework()
+    {
+        String installedTestFramework="";
+        MavenCoreFacet mavenCoreFacet = project.getFacet(MavenCoreFacet.class);
+        Model model=mavenCoreFacet.getPOM();
+        List<org.apache.maven.model.Dependency> dependencies=model.getDependencies();
+        for(org.apache.maven.model.Dependency dependency: dependencies){
+        if(dependency.getGroupId().equals("junit") && dependency.getArtifactId().equals("junit")){
+        installedTestFramework="junit";
+        break;
+        }
+        else if(dependency.getGroupId().equals("org.testng") && dependency.getArtifactId().equals("testng")){
+        installedTestFramework="testng";
+        break;
+        }
+     }
+     return installedTestFramework;
     }
 }
