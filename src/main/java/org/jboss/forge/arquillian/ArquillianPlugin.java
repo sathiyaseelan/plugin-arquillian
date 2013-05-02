@@ -366,22 +366,18 @@ public class ArquillianPlugin implements Plugin {
         return DependencyBuilder.create().setGroupId("org.jboss.arquillian.testng")
                 .setArtifactId("arquillian-testng-container").setScopeType(ScopeType.TEST);
     }
+    
     private String getInstalledTestFramework()
     {
-        String installedTestFramework="";
-        MavenCoreFacet mavenCoreFacet = project.getFacet(MavenCoreFacet.class);
-        Model model=mavenCoreFacet.getPOM();
-        List<org.apache.maven.model.Dependency> dependencies=model.getDependencies();
-        for(org.apache.maven.model.Dependency dependency: dependencies){
-        if(dependency.getGroupId().equals("junit") && dependency.getArtifactId().equals("junit")){
-        installedTestFramework="junit";
-        break;
+        String installedTestFramework = "";
+        Dependency junit_depDependency = DependencyBuilder.create().setGroupId("junit").setArtifactId("junit-dep");
+        DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+        if (dependencyFacet.hasEffectiveDependency( createJunitDependency() || junit_depDependency )){
+            installedTestFramework = "junit";
         }
-        else if(dependency.getGroupId().equals("org.testng") && dependency.getArtifactId().equals("testng")){
-        installedTestFramework="testng";
-        break;
-        }
-     }
+        else if(dependencyFacet.hasEffectiveDependency( createTestNgDependency() )){
+        	installedTestFramework = "testng";
+        }        
      return installedTestFramework;
     }
 }
