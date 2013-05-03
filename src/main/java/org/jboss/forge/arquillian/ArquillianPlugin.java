@@ -366,17 +366,18 @@ public class ArquillianPlugin implements Plugin {
         return DependencyBuilder.create().setGroupId("org.jboss.arquillian.testng")
                 .setArtifactId("arquillian-testng-container").setScopeType(ScopeType.TEST);
     }
+    
     private String getInstalledTestFramework()
     {
         String installedTestFramework = "";
-        DependencyFacet dependencyFacet=project.getFacet(DependencyFacet.class);
-        if (dependencyFacet.hasEffectiveDependency(createJunitDependency())){
+        Dependency junit_depDependency = DependencyBuilder.create().setGroupId("junit").setArtifactId("junit-dep");
+        DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+        if (dependencyFacet.hasEffectiveDependency( createJunitDependency() || junit_depDependency )){
             installedTestFramework = "junit";
         }
-        else if(dependencyFacet.hasEffectiveDependency(createTestNgDependency())){
+        else if(dependencyFacet.hasEffectiveDependency( createTestNgDependency() )){
         	installedTestFramework = "testng";
         }        
-        
      return installedTestFramework;
     }
 }
